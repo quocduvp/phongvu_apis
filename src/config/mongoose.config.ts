@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
 
-mongoose.connect("mongodb://admin_portal:admin123@ds151805.mlab.com:51805/phongvu_dbs")
+mongoose.connect("mongodb://admin_portal:admin123@ds151805.mlab.com:51805/phongvu_dbs",{
+  useCreateIndex: true,
+  useNewUrlParser: true
+})
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {

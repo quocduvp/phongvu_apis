@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded({extended : true}))
 app.use(flash())
 app.use(cors())
 
+app.use("/api/v1/categories", categoryRouter)
 
 app.listen(3333)
 export { app }
