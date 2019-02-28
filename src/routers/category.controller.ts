@@ -5,30 +5,34 @@ const categoryRouter = Router()
 categoryRouter.post("/create", async (req, res) => {
     const data = <CategoryInterface> req.body 
     const category = await Category.create(data)
-    category
     res.json(category)
-}).get("/list", async (req, res) => {
-    const category = await Category.paginate({
-        is_active: true,
-    },{
-        sort: "-createdAt",
-        lean:     true
-    })
+})
+
+categoryRouter.get("/list", async (req, res) => {
+    const category = await Category.find({
+        is_active: true
+    }).where('name').regex(req.query.search).lean().exec()
     return res.json(category)
-}).put("/update/:id", async (req, res) => {
+})
+
+categoryRouter.put("/update/:id", async (req, res) => {
     const data = <CategoryInterface> req.body 
     const category = await Category.updateOne({
         _id: req.params.id
     }, data).exec()
     res.json(category)
-}).put("/deactive/:id",async (req,res) => {
+})
+
+categoryRouter.put("/deactive/:id",async (req,res) => {
     const category = await Category.updateOne({
         _id: req.params.id
     }, {
         is_active: false
     }).exec()
     res.json(category)
-}).put("/active/:id",async (req,res) => {
+})
+
+categoryRouter.put("/active/:id",async (req,res) => {
     const category = await Category.updateOne({
         _id: req.params.id
     }, {
@@ -40,6 +44,37 @@ categoryRouter.post("/create", async (req, res) => {
     res.json(category)
 })
 
+// update sub category
+categoryRouter.post("/create/:id/sub_category", async (req,res) => {
+    const { name = "" } = req.body
+    const category = await Category.updateOne({
+        _id: req.params.id 
+    },{
+        $push: { sub_category: {name : name} }
+    }).exec()
+    return res.json(category)
+})
+
+categoryRouter.put("/update/:id/sub_category/:sub_id", async (req,res) => {
+    const { name = "" } = req.body
+    const category = await Category.updateOne({
+        _id: req.params.id,
+        'sub_category._id': req.params.sub_id
+    },{
+        $set: { 'sub_category.$': {name : name} }
+    }).exec()
+    return res.json(category)
+})
+
+// delete subcaterogy
+categoryRouter.delete("/delete/:id/sub_category/:sub_id", async (req,res) => {
+    const category = await Category.updateOne({
+        _id: req.params.id,
+    },{
+        $pull: { 'sub_category': { _id: req.params.sub_id } }
+    }).exec()
+    return res.json(category)
+})
 
 interface CategoryInterface{
     name : string,

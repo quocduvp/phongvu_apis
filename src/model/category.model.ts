@@ -10,10 +10,14 @@ const categorySchema =  new mongoose.Schema({
         default: true
     },
     sub_category: [{
-        name: String
+        name: {
+            type : String,
+            unique: true
+        }
     }]
 }, {
     timestamps: true
 })
 categorySchema.plugin(paginate)
+categorySchema.index({ 'name': "text", is_active: 1, 'sub_category.name': 'text' })
 export const Category = mongoose.model('Category', categorySchema)

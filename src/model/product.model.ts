@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import paginate from 'mongoose-paginate-v2'
 const productSchema = new mongoose.Schema({
     title: {
         type: String
@@ -13,9 +13,7 @@ const productSchema = new mongoose.Schema({
         default: null
     },
     images: [String],
-    status: {
-        enum: ['pending', 'empty', 'selling', 'sales']
-    },
+    status: String,  // ['pending', 'empty', 'selling', 'sales']
     price: {
         type: Number,
         default: 0
@@ -29,10 +27,16 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    is_active: {
+        type: Boolean,
+        default: true
+    },
+    category: [String],
     specifications: {
         type: mongoose.SchemaTypes.Mixed,
         default: null
     }
 })
-
+productSchema.plugin(paginate)
+productSchema.index({ title: "text", is_active: 1, desciption: 'text', createdAt: -1 })
 export const Product = mongoose.model('Product', productSchema)
