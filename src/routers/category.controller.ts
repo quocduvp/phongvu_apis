@@ -9,9 +9,10 @@ categoryRouter.post("/create", async (req, res) => {
 })
 
 categoryRouter.get("/list", async (req, res) => {
+    const { search =""} = req.query
     const category = await Category.find({
         is_active: true
-    }).where('name').regex(req.query.search).lean().exec()
+    }).where('name').regex(search).lean().exec()
     return res.json(category)
 })
 
