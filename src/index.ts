@@ -18,7 +18,7 @@ app.use(cors())
 app.use("/api/v1/categories", categoryRouter)
 app.use("/api/v1/products", productRouter)
 app.use("/api/v1/upload", uploadRouter)
-app.listen(3333)
+app.listen(process.env.PORT || 3333)
 export { app }
 
 // redis
