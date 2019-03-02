@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-mongoose.connect("mongodb://admin_portal:admin123@ds151805.mlab.com:51805/phongvu_dbs",{
+mongoose.connect(process.env.MONGO_URL,{
   useCreateIndex: true,
   useNewUrlParser: true
 })
