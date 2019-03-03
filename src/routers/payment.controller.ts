@@ -2,7 +2,9 @@ import { Router } from 'express'
 import { Order, Product, Buyer } from '../model'
 import _ from 'lodash'
 import Stripe from 'stripe'
+import { verifyToken } from '../config/jwt.config';
 export const paymentRouter = Router()
+
 const stripe = new Stripe("sk_test_3WMWfYvmSuI2rpifpujx4dw2")
 
 paymentRouter.post("/checkout", async (req, res) => {
@@ -71,7 +73,7 @@ paymentRouter.post("/checkout", async (req, res) => {
     }
 })
 
-paymentRouter.get("/buyers", async (req,res) => {
+paymentRouter.get("/buyers", verifyToken, async (req,res) => {
     const { search = "", page = 1, limit = 10, sort = "-createdAt" } = req.query
     const buyers = await Buyer.paginate({
         $or: [
@@ -91,7 +93,7 @@ paymentRouter.get("/buyers", async (req,res) => {
     return res.json(buyers)
 })
 
-paymentRouter.get("/buyers/:id", async (req,res) => {
+paymentRouter.get("/buyers/:id", verifyToken, async (req,res) => {
     const { id } = req.params
     const buyer = await Buyer.findById(id).populate("orders").lean().exec()
     buyer.orders = await Order.find({

@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import { Category } from '../model'
+import { verifyToken } from '../config/jwt.config';
 const categoryRouter = Router()
 
-categoryRouter.post("/create", async (req, res) => {
+categoryRouter.post("/create", verifyToken, async (req, res) => {
     const data = <CategoryInterface> req.body 
     const category = await Category.create(data)
     res.json(category)
@@ -16,7 +17,7 @@ categoryRouter.get("/list", async (req, res) => {
     return res.json(category)
 })
 
-categoryRouter.put("/update/:id", async (req, res) => {
+categoryRouter.put("/update/:id", verifyToken, async (req, res) => {
     const data = <CategoryInterface> req.body 
     const category = await Category.updateOne({
         _id: req.params.id
@@ -24,7 +25,7 @@ categoryRouter.put("/update/:id", async (req, res) => {
     res.json(category)
 })
 
-categoryRouter.put("/deactive/:id",async (req,res) => {
+categoryRouter.put("/deactive/:id", verifyToken,async (req,res) => {
     const category = await Category.updateOne({
         _id: req.params.id
     }, {
@@ -33,20 +34,20 @@ categoryRouter.put("/deactive/:id",async (req,res) => {
     res.json(category)
 })
 
-categoryRouter.put("/active/:id",async (req,res) => {
+categoryRouter.put("/active/:id", verifyToken,async (req,res) => {
     const category = await Category.updateOne({
         _id: req.params.id
     }, {
         is_active: true
     }).exec()
     res.json(category)
-}).get("/details/:id", async (req,res)=> {
+}).get("/details/:id", verifyToken, async (req,res)=> {
     const category = await Category.findById(req.params.id).exec()
     res.json(category)
 })
 
 // update sub category
-categoryRouter.post("/create/:id/sub_category", async (req,res) => {
+categoryRouter.post("/create/:id/sub_category", verifyToken, async (req,res) => {
     const { name = "" } = req.body
     const category = await Category.updateOne({
         _id: req.params.id 
@@ -56,7 +57,7 @@ categoryRouter.post("/create/:id/sub_category", async (req,res) => {
     return res.json(category)
 })
 
-categoryRouter.put("/update/:id/sub_category/:sub_id", async (req,res) => {
+categoryRouter.put("/update/:id/sub_category/:sub_id", verifyToken, async (req,res) => {
     const { name = "" } = req.body
     const category = await Category.updateOne({
         _id: req.params.id,
@@ -68,7 +69,7 @@ categoryRouter.put("/update/:id/sub_category/:sub_id", async (req,res) => {
 })
 
 // delete subcaterogy
-categoryRouter.delete("/delete/:id/sub_category/:sub_id", async (req,res) => {
+categoryRouter.delete("/delete/:id/sub_category/:sub_id", verifyToken, async (req,res) => {
     const category = await Category.updateOne({
         _id: req.params.id,
     },{

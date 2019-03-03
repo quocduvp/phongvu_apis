@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import multer from 'multer'
 import { uploadImageToStorage } from '../config/cloudinary.config';
+import { verifyToken } from '../config/jwt.config';
 
 export const uploadRouter = Router()
 
@@ -21,8 +22,9 @@ const formdata = multer({storage: multer.diskStorage({
     }
 }).single('source')
 
-uploadRouter.post("/image", formdata ,async (req, res) => {
+uploadRouter.post("/image", formdata, verifyToken ,async (req, res) => {
     const file = req.file
+    if(!file) return res.json({error: "file is null."}).status(400)
     const url = await uploadImageToStorage(file, 'products')
     return res.json({url})
 })

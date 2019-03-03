@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { Product } from '../model'
+import { verifyToken } from '../config/jwt.config';
 export const productRouter = Router()
 
 productRouter.get("/list", async (req,res) => {
@@ -16,15 +17,22 @@ productRouter.get("/list", async (req,res) => {
     return res.json(product)
 })
 
+productRouter.get("/details/:id", async (req,res) => {
+    const { id= "" } = req.params
+    const product = await Product.findById(id).lean().exec()
+    return res.json(product)
+})
+
+
 // add new product
-productRouter.post("/create", async (req, res) => {
+productRouter.post("/create", verifyToken,async (req, res) => {
     const data = <ProductInterface> req.body
     const product = await Product.create(data)
     return res.json(product)
 })
 
 // update product
-productRouter.put("/update/:id", async (req, res) => {
+productRouter.put("/update/:id", verifyToken, async (req, res) => {
     const data = <ProductInterface> req.body
     const product = await Product.updateOne({
         _id: req.params.id
@@ -33,7 +41,7 @@ productRouter.put("/update/:id", async (req, res) => {
 })
 
 // Active product
-productRouter.put("/active/:id", async (req, res) => {
+productRouter.put("/active/:id", verifyToken, async (req, res) => {
     const product = await Product.updateOne({
         _id: req.params.id 
     }, {
@@ -43,7 +51,7 @@ productRouter.put("/active/:id", async (req, res) => {
 })
 
 // Deactive product
-productRouter.put("/deactive/:id", async (req, res) => {
+productRouter.put("/deactive/:id", verifyToken, async (req, res) => {
     const product = await Product.updateOne({
         _id: req.params.id 
     }, {
@@ -53,7 +61,7 @@ productRouter.put("/deactive/:id", async (req, res) => {
 })
 
 // Add image 
-productRouter.post("/:id/images", async (req, res) => {
+productRouter.post("/:id/images", verifyToken, async (req, res) => {
     const product = await Product.updateOne({
         _id: req.params.id 
     }, {
@@ -65,7 +73,7 @@ productRouter.post("/:id/images", async (req, res) => {
 })
 
 // delete images
-productRouter.delete("/:id/images", async (req, res) => {
+productRouter.delete("/:id/images", verifyToken, async (req, res) => {
     const product = await Product.updateOne({
         _id: req.params.id 
     }, {

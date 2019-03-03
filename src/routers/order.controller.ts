@@ -1,9 +1,10 @@
 import { Router } from 'express'
 import { Order, Product } from '../model'
+import { verifyToken } from '../config/jwt.config';
 export const orderRouter = Router()
 
-orderRouter.get("/list", async (req, res) => {
-    const { status = "", search = "", page = 1, limit = 10, sort = "-createdAt" } = req.query
+orderRouter.get("/list", verifyToken,async (req, res) => {
+    const { status = "", page = 1, limit = 10, sort = "-createdAt" } = req.query
     const order = await Order.paginate({
         status: { $regex: status, $options: 'i' }
         }, {
@@ -16,13 +17,13 @@ orderRouter.get("/list", async (req, res) => {
     return res.json(order)
 })
 
-orderRouter.get("/details/:id", async (req, res) => {
+orderRouter.get("/details/:id", verifyToken, async (req, res) => {
     const { id = "" } = req.params
     const order = await Order.findById(id).populate("products").populate('buyer').lean().exec()
     return res.json(order)
 })
 
-orderRouter.post("/check-status/:id", async (req, res) => {
+orderRouter.post("/check-status/:id", verifyToken, async (req, res) => {
     const { status = "PENDING" } = req.body
     const { id } = req.params
     const arrStatus = ['PENDING', 'CANCEL', 'SUCCESS']
