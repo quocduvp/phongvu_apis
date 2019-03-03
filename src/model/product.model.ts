@@ -36,7 +36,8 @@ const productSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.Mixed,
         default: null
     }
+},{
+    timestamps: true
 })
 productSchema.plugin(paginate)
-productSchema.index({ title: "text", is_active: 1, desciption: 'text', createdAt: -1 })
 export const Product = mongoose.model('Product', productSchema)

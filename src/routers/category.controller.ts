@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Category } from '../model/category.model'
+import { Category } from '../model'
 const categoryRouter = Router()
 
 categoryRouter.post("/create", async (req, res) => {

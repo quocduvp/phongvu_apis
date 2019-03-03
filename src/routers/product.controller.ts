@@ -1,16 +1,17 @@
 import { Router } from 'express'
-import { Product } from '../model/product.model'
+import { Product } from '../model'
 export const productRouter = Router()
 
 productRouter.get("/list", async (req,res) => {
-    const { status= "", search= "", is_active = true, page=1, limit=10 } = req.query
+    const { status= "", search= "", is_active = true, page=1, limit=10, sort="-createdAt" } = req.query
     const product = await Product.paginate({
         is_active: Number(is_active), status: {$regex: status, $options: 'i'},
         $or: [{title: { $regex: search } }]
     },{
         page: Number(page),
         limit: Number(limit),
-        lean: true
+        lean: true,
+        sort: sort
     })
     return res.json(product)
 })
