@@ -41,7 +41,9 @@ categoryRouter.put("/active/:id", verifyToken,async (req,res) => {
         is_active: true
     }).exec()
     res.json(category)
-}).get("/details/:id", verifyToken, async (req,res)=> {
+})
+
+categoryRouter.get("/details/:id", async (req,res)=> {
     const category = await Category.findById(req.params.id).exec()
     res.json(category)
 })
