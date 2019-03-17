@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { Product } from '../model'
 import { verifyToken } from '../config/jwt.config';
+import validator from 'validator'
+import { isArray } from 'util';
 export const productRouter = Router()
 
 productRouter.get("/list", async (req,res) => {
@@ -62,11 +64,20 @@ productRouter.put("/deactive/:id", verifyToken, async (req, res) => {
 
 // Add image 
 productRouter.post("/:id/images", verifyToken, async (req, res) => {
+    const { images = [] } = req.body
+    const images_uri = images.map((image: string) => {
+        if(validator.isURL(image)){
+            return image
+        }
+    }).filter((image:string) => image)
+    if(images_uri.length <=0){
+        return res.status(400).json({error:"Invalid image uri", data: images})
+    }
     const product = await Product.updateOne({
         _id: req.params.id 
     }, {
         $push: {
-            images : req.body.images
+            images : images_uri
         }
     }).exec()
     return res.json(product)
