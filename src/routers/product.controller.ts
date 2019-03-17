@@ -29,7 +29,16 @@ productRouter.get("/details/:id", async (req,res) => {
 // add new product
 productRouter.post("/create", verifyToken,async (req, res) => {
     const data = <ProductInterface> req.body
-    const product = await Product.create(data)
+    const { images = <any>[] } = data
+    const images_uri = images.map((image: string) => {
+        if(validator.isURL(image)){
+            return image
+        }
+    }).filter((image:string) => image)
+    const product = await Product.create({
+        ...data, 
+        images: images_uri
+    })
     return res.json(product)
 })
 
